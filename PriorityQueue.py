@@ -35,7 +35,7 @@ class PriorityQueue:
 		return self.queue
 
 
-#priority queue testing
+# priority queue testing
 # test = PriorityQueue()
 # print(test.empty())
 # lista = ["a", 10]
