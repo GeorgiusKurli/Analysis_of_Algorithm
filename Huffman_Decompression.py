@@ -1,8 +1,8 @@
 
-file_name = "test_compressed.bin"
+file_name = "test_huffcompressed.bin"
 
 # read the code file
-file = open(file_name[0:-15] + "_code.txt")
+file = open(file_name[0:-15] + "_huffcode.txt")
 letter_dict = eval(file.read())
 file.close()
 

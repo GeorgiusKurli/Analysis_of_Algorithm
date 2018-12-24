@@ -1,19 +1,42 @@
-# nodes are [letter, number]
+# nodes are [letter, number, code]
 
 from PriorityQueue import *
 
-# recursive function used to assign code for each letter
-def assign_code(tree, letter_dict, code = ""):
-	
-	# base case
-	if isinstance(tree[0], str):
-		letter_dict[tree[0]] = code
-		return letter_dict
+# function to split a priority queue into two lists of equal (more or less) value and add code
+def split_equal_list(priorityq, letter_dict):
+	if len(priorityq.return_all()) > 1:
 
-	# recursive case
+		priorityq1 = PriorityQueue()
+		priorityq2 = PriorityQueue()
+
+		temp1 = priorityq.pop()
+		temp1[2] += "0"
+		priorityq1.add(temp1)
+		count0 = temp1[1]
+
+		temp1 = priorityq.pop()
+		temp1[2] += "1"
+		priorityq2.add(temp1)
+		count1 = temp1[1]
+
+		while not priorityq.empty():
+			temp1 = priorityq.pop()
+			if count0 + temp1[1] - count1 < count1 + temp1[1] - count0:
+				temp1[2] += "0"
+				priorityq1.add(temp1)
+				count0 += temp1[1]
+			
+			else:
+				temp1[2] += "1"
+				priorityq2.add(temp1)	
+				count1 += temp1[1]
+
+		return [split_equal_list(priorityq1, letter_dict), split_equal_list(priorityq2, letter_dict)]
+
 	else:
-		letter_dict = assign_code(tree[0][0], letter_dict, code + "0")
-		return assign_code(tree[0][1], letter_dict, code + "1")
+		# save code into dictionary
+		letter_dict[priorityq.return_all()[0][0]] = priorityq.return_all()[0][2]
+		return priorityq.return_all()
 
 
 #https://stackoverflow.com/questions/51425638/how-to-write-huffman-coding-to-a-file-using-python#51425774
@@ -45,34 +68,21 @@ for x in range(1,len(text)):
 	else:
 		letter_dict[text[x]] = 1
 
-priorityq = ReversePriorityQueue()
+priorityq = PriorityQueue()
 
 # insert everything into priority queue
 for x in letter_dict:
-	priorityq.add([x, letter_dict[x]])
+	priorityq.add([x, letter_dict[x], ""])
 
-flag = True
+# generate shannon-fano code
+tree = split_equal_list(priorityq, letter_dict)
 
-# building huffman tree
-while flag:
-	# take 2 lowest nodes
-	temp1 = priorityq.pop()
-	temp2 = priorityq.pop()
-	
-	# check if 2 nodes are left
-	if priorityq.empty():
-		flag = False
-
-	# combine the two nodes and place it back into the priority queue
-	templist = [[temp1,temp2], temp1[1]+temp2[1]]
-	priorityq.add(templist)
-
-# assign code for each letter and store into dictionary
-letter_dict = assign_code(priorityq.pop(), letter_dict)
+for x,y in letter_dict.items():
+	print(x + " " + y)
 
 
 # create compressed version in text format
-file = open(file_name[0:-4] + "_huffcompressed.txt", "w")
+file = open(file_name[0:-4] + "_SFcompressed.txt", "w")
 
 result = ""
 
@@ -82,16 +92,18 @@ for x in text:
 
 file.close()
 
+
 # create compressed version in bin format
-file = open(file_name[0:-4] + "_huffcompressed.bin", "wb")
+file = open(file_name[0:-4] + "_SFcompressed.bin", "wb")
 
 file.write(_to_Bytes(result))
 file.close()
 
 # create compression code in text format
-file = open(file_name[0:-4] + "_huffcode.txt", "w")
+file = open(file_name[0:-4] + "_SFcode.txt", "w")
 file.write(str(letter_dict))
 file.close()
+
 
 #https://stackoverflow.com/questions/51425638/how-to-write-huffman-coding-to-a-file-using-python#51425774
 #https://docs.python.org/3/tutorial/classes.html#iterators
