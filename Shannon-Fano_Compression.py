@@ -4,23 +4,30 @@ from PriorityQueue import *
 
 # function to split a priority queue into two lists of equal (more or less) value and add code
 def split_equal_list(priorityq, letter_dict):
+	
+	# check if more than 1 node in priority queue
 	if len(priorityq.return_all()) > 1:
 
 		priorityq1 = PriorityQueue()
 		priorityq2 = PriorityQueue()
 
+		# add code '0' for priority queue 1
 		temp1 = priorityq.pop()
 		temp1[2] += "0"
 		priorityq1.add(temp1)
 		count0 = temp1[1]
 
+		# add code '1' for priority queue 2
 		temp1 = priorityq.pop()
 		temp1[2] += "1"
 		priorityq2.add(temp1)
 		count1 = temp1[1]
 
+		# place all nodes from priorityq into correct place
 		while not priorityq.empty():
 			temp1 = priorityq.pop()
+
+			# compare where to place next node
 			if count0 + temp1[1] - count1 < count1 + temp1[1] - count0:
 				temp1[2] += "0"
 				priorityq1.add(temp1)
@@ -31,8 +38,10 @@ def split_equal_list(priorityq, letter_dict):
 				priorityq2.add(temp1)	
 				count1 += temp1[1]
 
+		# call itself until base case is reached
 		return [split_equal_list(priorityq1, letter_dict), split_equal_list(priorityq2, letter_dict)]
 
+	# base case
 	else:
 		# save code into dictionary
 		letter_dict[priorityq.return_all()[0][0]] = priorityq.return_all()[0][2]
@@ -40,10 +49,12 @@ def split_equal_list(priorityq, letter_dict):
 
 
 #https://stackoverflow.com/questions/51425638/how-to-write-huffman-coding-to-a-file-using-python#51425774
-# function to generate a byte array from a string of 1s and 0s
+# function to convert a string of 1s and 0s into bytes
+# if bytes is not filled, zeroes will be added
 def _to_Bytes(data):
 	b = bytearray()
 	for i in range(0, len(data), 8):
+		# add a byte into the bytearray
 		b.append(int(data[i:i+8], 2))
 	return bytes(b)
 
@@ -95,25 +106,13 @@ file.close()
 
 # create compressed version in bin format
 file = open(file_name[0:-4] + "_SFcompressed.bin", "wb")
-
 file.write(_to_Bytes(result))
 file.close()
 
-# create compression code in text format
+# create compression data(bitcount dictionary) in text format
 file = open(file_name[0:-4] + "_SFcode.txt", "w")
+file.write(str(len(result)))
 file.write(str(letter_dict))
 file.close()
 
-
-#https://stackoverflow.com/questions/51425638/how-to-write-huffman-coding-to-a-file-using-python#51425774
-#https://docs.python.org/3/tutorial/classes.html#iterators
-from typing import Generator
-def reverse_encoding(content, _lookup) -> Generator[str, None, None]:
-	while content:
-		_options = [i for i in _lookup if content.startswith(i) and (any(content[len(i):].startswith(b) for b in _lookup) or not content[len(i):])]
-		if not _options:
-			raise Exception("Decoding error")
-		yield _lookup[_options[0]]
-		content = content[len(_options[0]):]
-
-print(''.join(reverse_encoding(result, {b:a for a, b in letter_dict.items()})))
+print(result)

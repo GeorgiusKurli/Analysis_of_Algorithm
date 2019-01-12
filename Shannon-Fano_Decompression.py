@@ -1,8 +1,8 @@
 
-file_name = "test_huffcompressed.bin"
+file_name = "test_SFcompressed.bin"
 
 # read the code file
-file = open(file_name[0:-19] + "_huffcode.txt")
+file = open(file_name[0:-17] + "_SFcode.txt")
 data = file.read()
 
 # find first occurence of {
@@ -28,7 +28,7 @@ result = ""
 # adding up all bits found in the bin file
 for x in binary_data:
 	# formats the integer into binary string with padding of 0 on the left until 8 char is reached
-	result += format(x,"08b")
+	result += format(x, "08b")
 
 # obtain last byte
 tempdata = result[-8:]
@@ -57,6 +57,6 @@ original_text = ''.join(reverse_encoding(result, {b:a for a, b in letter_dict.it
 print(original_text)
 
 # write original file
-file = open(file_name[0:-19]+".txt", 'w')
+file = open(file_name[0:-17]+".txt", 'w')
 file.write(original_text)
 file.close()

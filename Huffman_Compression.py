@@ -5,8 +5,9 @@ from PriorityQueue import *
 # recursive function used to assign code for each letter
 def assign_code(tree, letter_dict, code = ""):
 	
-	# base case
+	# base case checks if a letter is found
 	if isinstance(tree[0], str):
+		# assign code into dictionary for the letter
 		letter_dict[tree[0]] = code
 		return letter_dict
 
@@ -17,10 +18,12 @@ def assign_code(tree, letter_dict, code = ""):
 
 
 #https://stackoverflow.com/questions/51425638/how-to-write-huffman-coding-to-a-file-using-python#51425774
-# function to generate a byte array from a string of 1s and 0s
+# function to convert a string of 1s and 0s into bytes
+# if bytes is not filled, zeroes will be added
 def _to_Bytes(data):
 	b = bytearray()
 	for i in range(0, len(data), 8):
+		# add a byte into the bytearray
 		b.append(int(data[i:i+8], 2))
 	return bytes(b)
 
@@ -84,24 +87,16 @@ file.close()
 
 # create compressed version in bin format
 file = open(file_name[0:-4] + "_huffcompressed.bin", "wb")
-
 file.write(_to_Bytes(result))
 file.close()
 
-# create compression code in text format
+
+
+# create compression data(bitcount dictionary) in text format
 file = open(file_name[0:-4] + "_huffcode.txt", "w")
+file.write(str(len(result)))
 file.write(str(letter_dict))
 file.close()
 
-#https://stackoverflow.com/questions/51425638/how-to-write-huffman-coding-to-a-file-using-python#51425774
-#https://docs.python.org/3/tutorial/classes.html#iterators
-from typing import Generator
-def reverse_encoding(content, _lookup) -> Generator[str, None, None]:
-	while content:
-		_options = [i for i in _lookup if content.startswith(i) and (any(content[len(i):].startswith(b) for b in _lookup) or not content[len(i):])]
-		if not _options:
-			raise Exception("Decoding error")
-		yield _lookup[_options[0]]
-		content = content[len(_options[0]):]
-
-print(''.join(reverse_encoding(result, {b:a for a, b in letter_dict.items()})))
+print(letter_dict)
+print(result)
