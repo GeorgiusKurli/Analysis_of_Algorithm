@@ -86,11 +86,9 @@ for x in letter_dict:
 	priorityq.add([x, letter_dict[x], ""])
 
 # generate shannon-fano code
-tree = split_equal_list(priorityq, letter_dict)
+split_equal_list(priorityq, letter_dict)
 
-for x,y in letter_dict.items():
-	print(x + " " + y)
-
+print(letter_dict)
 
 # create compressed version in text format
 file = open(file_name[0:-4] + "_SFcompressed.txt", "w")
